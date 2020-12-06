@@ -5,6 +5,12 @@ import poplib
 import imaplib
 import email
 import os
+from datetime import datetime
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import math
 def check_server_reply(clientSocket):
     recv220 = clientSocket.recv(1024).decode()
     print('Server :',recv220)
@@ -114,7 +120,15 @@ def send_email(user_name,password,message,receiver):
     clientSocket = context.wrap_socket(clientSocket, server_hostname=host)
     resp = authorization_login(user_name,password,clientSocket,message,receiver)
     return resp
-def check_mail_pop3(user_name,password,host,port):
+# def check_mail_pop3(user_name,password,host,port):
+def check_mail_pop3(user_name,password):
+    path_save = '/home/taindp/PycharmProjects/email/download_pop3'
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S").replace(r'/',r'_').replace(r':',r'_').replace(r' ',r'_')
+    name_save = os.path.join(path_save,dt_string)
+    # print(dt_string)
+    host = 'pop.gmail.com'
+    port = '995'
     server = poplib.POP3_SSL(host, port)
     print('Server :',server.getwelcome().decode('utf-8'))
     server.user(user_name)
@@ -131,120 +145,148 @@ def check_mail_pop3(user_name,password,host,port):
     # print('Server :',resp.decode('utf-8'))
     index = len(mails)
     if index > 0:
-        print('Client : retr',index)
-        msg = server.retr(index)
-        response = msg[0]
-        # print('Server :',response.decode('utf-8'))
-        lines = msg[1]
-        octets = msg[2]
-        msg_content = b'\r\n'.join(lines).decode('utf-8')
-        print('Server :',msg_content)
-        print('Client : quit')
-        # print('Server : +OK POP3 server signing off')
-        # server.rset()
-        # for item in range(1,len(mails)):
-        #     server.dele(item)
+        # file_save = open(name_save,'w')
+        for item in range(0,index):
+            file_save = open(str(name_save+'_'+str(item)+'.txt'),'w')
+            msg = server.retr(item+1)[1]
+            msg_text = b'\r\n'.join(msg).decode('utf-8')
+            # print(parse_email_header(msg_text))
+            file_save.write(msg_text)
+        raw_email = b"\n".join(server.retr(1)[1])
+        dict_parser = parser_pop(raw_email)
         server.quit()
-        return msg_content
+    # else:
+        return dict_parser
     else:
-        return ('Server : Mailbox empty')
+         server.quit()
+def parser_pop(raw_email):
+    parsed_email = email.message_from_bytes(raw_email)
+    dict_parser = {}
+    dict_parser['From'] = parsed_email['From']
+    dict_parser['To'] = parsed_email['To']
+    dict_parser['Date'] = parsed_email['Date']
+    dict_parser['Subject'] = parsed_email['Subject']
+    dict_parser['Text'] = []
+    dict_parser['Attachment'] = {}
+    for part in parsed_email.walk():
+        if part.is_multipart():
+            continue
+        elif part.get_content_maintype() == 'text':
+            text = part.get_payload(decode=True).decode(part.get_content_charset())
+            dict_parser['Text'].append(text)
+            # print('Text:\n', text)
+        # elif part.get_content_maintype() == 'application' and part.get_content_disposition() == 'attachment':
+        elif part.get_content_maintype() == 'application':
+            name = decode_header(part.get_filename())
+            body = part.get_payload(decode=True)
+            size = len(body)
+            save_path = '/home/taindp/PycharmProjects/email/download_attachment'
+            dict_parser['Attachment']['Name'] = name
+            dict_parser['Attachment']['Size'] = size
+            dict_parser['Attachment']['Body'] = body[0:50]
+            fp = open(os.path.join(save_path, name), 'wb')
+            fp.write(body)
+            # fp.close
+            # print('Attachment: "{}", size: {} bytes, starts with: "{}"'.format(name, size, body[:50]))
+        # else:
+        #     print('Unknown part:', part.get_content_type())
+    # print('======== email #%i ended =========' % 1)
+    return dict_parser
 
-def check_mail_imap(user_name,password,host,port):
+def decode_header(header):
+    decoded_bytes, charset = email.header.decode_header(header)[0]
+    if charset is None:
+        return str(decoded_bytes)
+    else:
+        return decoded_bytes.decode(charset)
+def check_mail_imap(user_name,password,counter):
+    host = 'imap.gmail.com'
+    port = '993'
     server = imaplib.IMAP4_SSL(host,port)
     server.login(user_name,password)
     server.select("Inbox")
     type,data = server.search(None,'ALL')
     mail_ids = data[0]
     id_list = mail_ids.split()
-    response,content = server.fetch(id_list[-1], '(RFC822)' )
-    raw_email = content[0][1]
-    raw_email_string = raw_email.decode('utf-8')
-    email_message = email.message_from_string(raw_email_string)
-    return email_message
-
-
+    if abs(counter) < len(id_list):
+    # response,content = server.fetch(id_list[-1], '(RFC822)' )
+        response,content = server.fetch(id_list[counter], '(RFC822)' )
+        raw_email = content[0][1]
+        raw_email_string = raw_email.decode('utf-8')
+        email_message = email.message_from_string(raw_email_string)
+        return email_message
+    else:
+        if counter < 0 :
+            response,content = server.fetch(id_list[0], '(RFC822)' )
+            raw_email = content[0][1]
+            raw_email_string = raw_email.decode('utf-8')
+            email_message = email.message_from_string(raw_email_string)
+            return email_message
+        else:
+            response,content = server.fetch(id_list[-1], '(RFC822)' )
+            raw_email = content[0][1]
+            raw_email_string = raw_email.decode('utf-8')
+            email_message = email.message_from_string(raw_email_string)
+            return email_message
 def parse_email_header(msg):
-    print('********************************* start parse_email_header *********************************')
-    # just parse from, to, subject header value.
     header_list = ('From', 'To', 'Subject')
-
     # loop in the header list
+    dict_header = {}
     for header in header_list:
         # get each header value.
         header_value = msg.get(header, '')
-        print(header + ' : ' + header_value)
+        dict_header[header.replace(r':',r'')] = header_value
+    return dict_header
 
 # Parse email body data.
 def parse_email_body(msg):
-    print('********************************* start parse_email_body *********************************')
-
-    # if the email contains multiple part.
     if (msg.is_multipart()):
         # get all email message parts.
         parts = msg.get_payload()
         # loop in above parts.
         for n, part in enumerate(parts):
-            # get part content type.
             content_type = part.get_content_type()
-            print('---------------------------Part ' + str(n) + ' content type : ' + content_type + '---------------------------------------')
             parse_email_content(msg)
     else:
        parse_email_content(msg)
 # Parse email message part data.
+
 def parse_email_content(msg):
-    # get message content type.
-    content_type = msg.get_content_type().lower()
-
-    print('---------------------------------' + content_type + '------------------------------------------')
-    # if the message part is text part.
-    if content_type=='text/plain' or content_type=='text/html':
-        # get text content.
-        content = msg.get_payload(decode=True)
-        # get text charset.
-        charset = msg.get_charset()
-        # if can not get charset.
-        if charset is None:
-            # get message 'Content-Type' header value.
-            content_type = msg.get('Content-Type', '').lower()
-            # parse the charset value from 'Content-Type' header value.
-            pos = content_type.find('charset=')
-            if pos >= 0:
-                charset = content_type[pos + 8:].strip()
-                pos = charset.find(';')
-                if pos>=0:
-                    charset = charset[0:pos]
-        if charset:
-            content = content.decode(charset)
-
-        print(content)
-    # if this message part is still multipart such as 'multipart/mixed','multipart/alternative','multipart/related'
-    elif content_type.startswith('multipart'):
-        # get multiple part list.
-        body_msg_list = msg.get_payload()
-        # loop in the multiple part list.
-        for body_msg in body_msg_list:
-            # parse each message part.
-            parse_email_content(body_msg)
-    # if this message part is an attachment part that means it is a attached file.
-    elif content_type.startswith('image') or content_type.startswith('application'):
-        # get message header 'Content-Disposition''s value and parse out attached file name.
-        attach_file_info_string = msg.get('Content-Disposition')
-        prefix = 'filename="'
-        pos = attach_file_info_string.find(prefix)
-        attach_file_name = attach_file_info_string[pos + len(prefix): len(attach_file_info_string) - 1]
-
-        # get attached file content.
-        attach_file_data = msg.get_payload(decode=True)
-        # get current script execution directory path.
-        current_path = os.path.dirname(os.path.abspath(__file__))
-        # get the attached file full path.
-        attach_file_path = current_path + '/' + attach_file_name
-        # write attached file content to the file.
-        with open(attach_file_path,'wb') as f:
-            f.write(attach_file_data)
-
-        print('attached file is saved in path ' + attach_file_path)
-
+    # messages = []
+    body = ""
+    if msg.is_multipart():
+        for part in msg.walk():
+            type = part.get_content_type()
+            disp = str(part.get('Content-Disposition'))
+            # look for plain text parts, but skip attachments
+            if type == 'text/plain' and 'attachment' not in disp:
+                charset = part.get_content_charset()
+                # decode the base64 unicode bytestring into plain text
+                body = part.get_payload(decode=True).decode(encoding=charset, errors="ignore")
+                # if we've found the plain/text part, stop looping thru the parts
+                break
     else:
-        content = msg.as_string()
-        print(content)
+        # not multipart - i.e. plain text, no attachments
+        charset = msg.get_content_charset()
+        body = msg.get_payload(decode=True).decode(encoding=charset, errors="ignore")
+    if body:
+        return body
+def create_header(subject,trans,recv):
+    message = MIMEMultipart("alternative")
+    message["Subject"] = subject
+    message["From"] = trans
+    message["To"] = recv
+    return message
+def prepare_mess(subject,trans,recv,mess,url_attach):
+    message = create_header(subject,trans,recv)
+    # attach_file_name = '/home/taindp/Jupyter/resume_3dec/resume_parser/report/20201127_taindp_report_task_ner.pdf'
+    attach_file = open(url_attach, 'rb') # Open the file as binary mode
+    payload = MIMEBase('application', 'octate-stream', Name=url_attach.split(r'/')[-1])
+    payload.set_payload((attach_file).read())
+    encoders.encode_base64(payload) #encode the attachment
+    payload.add_header('Content-Decomposition', 'attachment', filename=url_attach.split(r'/')[-1])
+    #add payload header with filename
+    part1 = MIMEText(mess, "plain")
+    message.attach(part1)
+    message.attach(payload)
+    return message

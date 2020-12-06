@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gửi thư</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='../static/styles/style_send_fl_login.css') }}">
+    <title>Hộp thư</title>
+    <link rel="stylesheet" href="../static/styles/style_mail_box.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -23,40 +23,17 @@
         <!--Kết Thúc Phần Hình Ảnh-->
         <!--Bắt Đầu Phần Nội Dung-->
         <div class="noi-dung">
-
             <div class="form">
-                <h2>Soạn thư</h2>
+                <h2>Hộp thư điện tử</h2>
                 <form action="" method="post">
-                    <div class="addr">
-                        <span>Địa chỉ người nhận</span>
-                        <br>
-                        <br>
-                        <input type="text" name="recv" value="{{request.form.recv}}">
-                    </div>
-                    <br>
-                    <br>
-                    <div class="subject">
-                        <span>Chủ đề</span>
-                        <br>
-                        <br>
-                        <input type="text" name="subj" value="{{request.form.subj}}">
-                    </div>
-
-                    <br>
-                    <div class="mess">
-                        <span>Nội dung</span>
-                        <br>
-                        <br>
-                        <input type="text" name="mess" value="{{request.form.mess}}">
-                    </div>
-                    <br>
-
                     <div class="input-form">
-                    	<input type="file" name="att" value="Đính kèm">
-         			</div>
-         			<div class="input-form">
-                        <input type="submit" value="Gửi">
+                        <input type="submit" name ="submit_button" value="Soạn thư mới">
                     </div>
+                    <br>
+                    <div class="input-form">
+                        <input type="submit" name ="submit_button" value="Hộp thư đến">
+                    </div>
+
                 </form>
             </div>
         </div>

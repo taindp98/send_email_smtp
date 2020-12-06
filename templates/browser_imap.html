@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gửi thư</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='../static/styles/style_send_fl_login.css') }}">
+    <title>IMAP</title>
+    <link rel="stylesheet" href="../static/styles/style_imap.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -23,39 +23,43 @@
         <!--Kết Thúc Phần Hình Ảnh-->
         <!--Bắt Đầu Phần Nội Dung-->
         <div class="noi-dung">
-
             <div class="form">
-                <h2>Soạn thư</h2>
+                <h2>Duyệt thư với IMAP</h2>
                 <form action="" method="post">
-                    <div class="addr">
-                        <span>Địa chỉ người nhận</span>
+                    <div class="input-form">
+                        <h3>Người gửi</h3>
                         <br>
-                        <br>
-                        <input type="text" name="recv" value="{{request.form.recv}}">
+                        <p>
+                            {{header.From}}
+                        </p>
                     </div>
-                    <br>
-                    <br>
-                    <div class="subject">
-                        <span>Chủ đề</span>
-                        <br>
-                        <br>
-                        <input type="text" name="subj" value="{{request.form.subj}}">
-                    </div>
-
-                    <br>
-                    <div class="mess">
-                        <span>Nội dung</span>
-                        <br>
-                        <br>
-                        <input type="text" name="mess" value="{{request.form.mess}}">
-                    </div>
-                    <br>
 
                     <div class="input-form">
-                    	<input type="file" name="att" value="Đính kèm">
-         			</div>
-         			<div class="input-form">
-                        <input type="submit" value="Gửi">
+                        <h3>Người nhận</h3>
+                        <br>
+                        <p>
+                            {{header.To}}
+                        </p>
+                    </div>
+
+                    <div class="input-form">
+                        <h3>Chủ đề</h3>
+                        <br>
+                        <p>
+                            {{header.Subject}}
+                        </p>
+                    </div>
+
+                    <div class="input-form">
+                        <h3>Nội dung</h3>
+                        <br>
+                        <p>
+                            {{body}}
+                        </p>
+                    </div>
+                    <div class="input-form">
+                        <input type="submit" name ="submit_button" value="Trước đó">
+                        <input type="submit" name ="submit_button" value="Xem tiếp">
                     </div>
                 </form>
             </div>

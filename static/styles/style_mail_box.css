@@ -56,7 +56,7 @@ section .noi-dung .form h2{
 }
 
 section .noi-dung .form .input-form{
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 
@@ -82,23 +82,9 @@ section .noi-dung .form .addr input{
     border-radius: 30px;
     
 }
-
-section .noi-dung .form .subject input{
-    width: 100%;
-/*    height: 100px; */
-    padding: 10px 20px;
-    outline: none;
-    border: 1px solid #607d8b;
-    font-size: 16px;
-    letter-spacing: 1px;
-    color: #607d8b;
-    background: transparent;
-    border-radius: 30px;
-}
-
 section .noi-dung .form .mess input{
     width: 100%;
-    height: 100px; 
+    height: 200px; 
     padding: 10px 20px;
     outline: none;
     border: 1px solid #607d8b;
@@ -112,27 +98,13 @@ section .noi-dung .form .mess input{
 
 section .noi-dung .form .input-form input[type="submit"]{
     background: #ff4584;
-    width: 50%;
+    width: 100%;
     height: 50px; 
     color: #fff;
     outline: none;
     border: none;
     font-weight: 500;
-    cursor: pointer;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.12), 
-              0 2px 2px rgba(0,0,0,0.12), 
-              0 4px 4px rgba(0,0,0,0.12), 
-              0 8px 8px rgba(0,0,0,0.12),
-              0 16px 16px rgba(0,0,0,0.12);
-}
-section .noi-dung .form .input-form input[type="file"]{
-    background: white;
-    width: 100%;
-    height: 30px; 
-    color: #fff;
-    outline: none;
-    border: none;
-    font-weight: 500;
+    font-size: 20px;
     cursor: pointer;
     box-shadow: 0 1px 1px rgba(0,0,0,0.12), 
               0 2px 2px rgba(0,0,0,0.12), 
@@ -143,11 +115,6 @@ section .noi-dung .form .input-form input[type="file"]{
 
 section .noi-dung .form .input-form input[type="submit"]:hover{
     background: #f53677;
-}
-
-section .noi-dung .form .input-form input[type="file"]:hover{
-    background: white
-    ;
 }
 section .noi-dung .form .nho-dang-nhap{
     margin-bottom: 10px;
