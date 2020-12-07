@@ -34,7 +34,7 @@ if __name__=='__main__':
     trans = 'remitai1998@gmail.com'
     recv = 'remitai1998@gmail.com'
     mess = 'Good morning'
-    print(os.path.abspath("20201127_taindp_report_task_ner.pdf"))
+    # open(path,'r')
     # url_attach = '/home/taindp/Jupyter/resume_3dec/resume_parser/report/20201127_taindp_report_task_ner.pdf'
     # message = prepare_mess(subject,trans,recv,mess,url_attach)
     # send_email(user_name,password,message,receiver)
@@ -55,3 +55,5 @@ if __name__=='__main__':
     # now = datetime.now()
     # dt_string = now.strftime("%d/%m/%Y %H:%M:%S").replace(r'/',r'_').replace(r':',r'_').replace(r' ',r'_')
     # print(dt_string)
+    a=[]
+    print(a[0])

@@ -199,7 +199,18 @@ def decode_header(header):
         return str(decoded_bytes)
     else:
         return decoded_bytes.decode(charset)
-def check_mail_imap(user_name,password,counter):
+def cal_len_mailbox_imap(user_name,password):
+    host = 'imap.gmail.com'
+    port = '993'
+    server = imaplib.IMAP4_SSL(host,port)
+    server.login(user_name,password)
+    server.select("Inbox")
+    type,data = server.search(None,'ALL')
+    mail_ids = data[0]
+    id_list = mail_ids.split()
+    return len(id_list)
+
+def check_mail_imap(user_name,password,counter,dele):
     host = 'imap.gmail.com'
     port = '993'
     server = imaplib.IMAP4_SSL(host,port)
@@ -214,20 +225,27 @@ def check_mail_imap(user_name,password,counter):
         raw_email = content[0][1]
         raw_email_string = raw_email.decode('utf-8')
         email_message = email.message_from_string(raw_email_string)
+        if dele == True:
+            server.store(id_list[counter], '+FLAGS', '\\Deleted')
         return email_message
-    else:
+    elif len(id_list) == 1:
         if counter < 0 :
             response,content = server.fetch(id_list[0], '(RFC822)' )
             raw_email = content[0][1]
             raw_email_string = raw_email.decode('utf-8')
             email_message = email.message_from_string(raw_email_string)
+            if dele == True:
+                server.store(id_list[0], '+FLAGS', '\\Deleted')
             return email_message
         else:
             response,content = server.fetch(id_list[-1], '(RFC822)' )
             raw_email = content[0][1]
             raw_email_string = raw_email.decode('utf-8')
             email_message = email.message_from_string(raw_email_string)
+            if dele == True:
+                server.store(id_list[-1], '+FLAGS', '\\Deleted')
             return email_message
+
 def parse_email_header(msg):
     header_list = ('From', 'To', 'Subject')
     # loop in the header list
@@ -280,13 +298,14 @@ def create_header(subject,trans,recv):
 def prepare_mess(subject,trans,recv,mess,url_attach):
     message = create_header(subject,trans,recv)
     # attach_file_name = '/home/taindp/Jupyter/resume_3dec/resume_parser/report/20201127_taindp_report_task_ner.pdf'
-    attach_file = open(url_attach, 'rb') # Open the file as binary mode
-    payload = MIMEBase('application', 'octate-stream', Name=url_attach.split(r'/')[-1])
-    payload.set_payload((attach_file).read())
-    encoders.encode_base64(payload) #encode the attachment
-    payload.add_header('Content-Decomposition', 'attachment', filename=url_attach.split(r'/')[-1])
-    #add payload header with filename
     part1 = MIMEText(mess, "plain")
     message.attach(part1)
-    message.attach(payload)
+    if url_attach:
+        url_attach = os.path.abspath(url_attach)
+        attach_file = open(url_attach, 'rb') # Open the file as binary mode
+        payload = MIMEBase('application', 'octate-stream', Name=url_attach.split(r'/')[-1])
+        payload.set_payload((attach_file).read())
+        encoders.encode_base64(payload) #encode the attachment
+        payload.add_header('Content-Decomposition', 'attachment', filename=url_attach.split(r'/')[-1])
+        message.attach(payload)
     return message

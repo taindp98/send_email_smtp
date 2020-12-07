@@ -64,22 +64,50 @@ def login():
             # error = 'Invalid Credentials. Please try again.'
             return render_template('index.html', error=error)
     return render_template('index.html', error=error)
-counter = -1
+
 @app.route('/imap/<info>',methods=['GET','POST'])
 def browser_imap(info):
-    global counter
+    user_name = info.split('###')[0]
+    pass_word = info.split('###')[1]
+    len_mailbox = cal_len_mailbox_imap(user_name,pass_word)
+    if len_mailbox >= 1:
+        counter = -1
+    else:
+        counter = 0
+    # print(len_mailbox)
     if request.method == 'POST':
-        if request.form['submit_button'] == "Trước đó":
+        if request.form['submit_button'] == "Trước đó" and abs(counter) < len_mailbox:
             # if counter > 0:
             counter -= 1
             # else:
             #     counter = 0
-        elif request.form['submit_button'] == "Xem tiếp":
+        elif request.form['submit_button'] == "Xem tiếp" and abs(counter) < len_mailbox:
             counter += 1
-            print(counter)
-    user_name = info.split('###')[0]
-    pass_word = info.split('###')[1]
-    emcont = check_mail_imap(user_name,pass_word,counter)
+            # print(counter)
+        elif request.form['submit_button'] == "Trang chủ":
+            return redirect(url_for('mail_box',info=info))
+        elif request.form['submit_button'] == "Xóa thư":
+            if abs(counter) < len_mailbox :
+                check_mail_imap(user_name,pass_word,counter,True)
+                counter -= 1
+            else:
+                check_mail_imap(user_name,pass_word,counter,True)
+                header = {}
+                header['From'] = "Trống"
+                header['To'] = "Trống"
+                header['Subject'] = "Trống"
+                body = "Trống"
+                return render_template('browser_imap.html', header=header,body=body)
+    print(counter)
+    if len_mailbox == 0:
+        header = {}
+        header['From'] = "Trống"
+        header['To'] = "Trống"
+        header['Subject'] = "Trống"
+        body = "Trống"
+        return render_template('browser_imap.html', header=header,body=body)
+
+    emcont = check_mail_imap(user_name,pass_word,counter,False)
     header = parse_email_header(emcont)
     body = parse_email_content(emcont)
     return render_template('browser_imap.html', header=header,body=body)

@@ -59,12 +59,12 @@ section .noi-dung .form h2{
 }
 
 section .noi-dung .form .input-form input[type="submit"]{
-    margin-top: 180px
+    margin-top: 130px
 }
 
 section .noi-dung .form .input-form input[type="submit"]{
     background: #ff4584;
-    width: 30%;
+    width: 20%;
     height: 40px; 
     color: #fff;
     outline: none;
