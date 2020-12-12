@@ -1,0 +1,21 @@
+Return-Path: <remitai1998@gmail.com>
+Received: from ComputerNetwork ([14.226.229.254])
+        by smtp.gmail.com with SMTPSA id l190sm12802375pfl.205.2020.12.11.22.25.18
+        for <remitai1998@gmail.com>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Dec 2020 22:25:19 -0800 (PST)
+Message-ID: <5fd4624f.1c69fb81.1819a.84dc@mx.google.com>
+Date: Fri, 11 Dec 2020 22:25:19 -0800 (PST)
+Content-Type: multipart/alternative; boundary="===============1602722202860346750=="
+MIME-Version: 1.0
+Subject: demo xoa thu
+From: remitai1998@gmail.com
+To: remitai1998@gmail.com
+
+--===============1602722202860346750==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+
+hello
+--===============1602722202860346750==--

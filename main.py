@@ -43,17 +43,17 @@ if __name__=='__main__':
     # pop3_host = 'pop.gmail.com'
     # pop3_port = '995'
     # print(login_mail(user_name,password))
-    # print(check_mail_pop3(user_name,password))
-    # emcont = (check_mail_imap(user_name,password,-1))
+    print(check_mail_pop3(user_name,password))
+    # emcont = (check_mail_imap(user_name,password,-1,False))
     # print(parse_email_header(emcont))
     # print(emcont)
+    # for item in emcont.walk():
+    #     print(item.get_content_maintype())
     # print(emcont)
-    # print(parse_email_content(emcont))
+    # print(get_attach_imap(emcont))
     # parse_email_content(emcont)
     # print((int((b'1').decode())))
     # today = date.today()
     # now = datetime.now()
     # dt_string = now.strftime("%d/%m/%Y %H:%M:%S").replace(r'/',r'_').replace(r':',r'_').replace(r' ',r'_')
     # print(dt_string)
-    a=[]
-    print(a[0])

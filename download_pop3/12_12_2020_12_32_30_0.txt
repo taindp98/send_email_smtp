@@ -1,0 +1,21 @@
+Return-Path: <remitai1998@gmail.com>
+Received: from ComputerNetwork ([14.226.229.254])
+        by smtp.gmail.com with SMTPSA id c10sm12263513pfo.159.2020.12.11.21.32.14
+        for <remitai1998@gmail.com>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Dec 2020 21:32:15 -0800 (PST)
+Message-ID: <5fd455df.1c69fb81.14399.7a76@mx.google.com>
+Date: Fri, 11 Dec 2020 21:32:15 -0800 (PST)
+Content-Type: multipart/alternative; boundary="===============4529128205545831262=="
+MIME-Version: 1.0
+Subject: demo pop3
+From: remitai1998@gmail.com
+To: remitai1998@gmail.com
+
+--===============4529128205545831262==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+
+12:32
+--===============4529128205545831262==--

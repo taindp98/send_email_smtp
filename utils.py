@@ -13,24 +13,28 @@ from email import encoders
 import math
 def check_server_reply(clientSocket):
     recv220 = clientSocket.recv(1024).decode()
-    print('Server :',recv220)
+    # print('Server :',recv220)
     if recv220[:3] != '220':
         print("220 reply not received from server.")
     heloContent = 'HELO ComputerNetwork'
     heloCommand = '{}\r\n'.format(heloContent).encode()
-    print('Client :',heloContent)
+    # print('Client :',heloContent)
     clientSocket.send(heloCommand)
     recv250 = clientSocket.recv(1024).decode()
-    print('Server :',recv250)
+    # print('Server :',recv250)
     if recv250[:3] != '250':
         print('250 reply not received from server.')
     authContent = 'AUTH Login'
     authCommand = '{}\r\n'.format(authContent).encode()
     clientSocket.send(authCommand)
-    print('Client :',authContent)
+    # print('Client :',authContent)
     recv334 = clientSocket.recv(1024).decode()
-    print('Server :',recv334)
+    # print('Server :',recv334)
 def login_mail(user_name,pass_word,host='smtp.gmail.com',port=465):
+    """
+    login use method send socket
+    command login
+    """
     clientSocket = socket(AF_INET,SOCK_STREAM)
     clientSocket.connect((host, port))
     context = ssl.create_default_context()
@@ -47,12 +51,14 @@ def login_mail(user_name,pass_word,host='smtp.gmail.com',port=465):
     mailCommand = "{}\r\n".format(fromContent).encode()
     clientSocket.send(mailCommand)
     # print('Client :',fromContent)
+
     recv1 = clientSocket.recv(1024).decode()
-    # print('Server :',recv1)
+    print('Server :',recv1)
     if recv1[:3] != '250':
-        # print('250 reply not received from server.')
+        print('250 reply not received from server.')
         return False
     else:
+        print('Server : Authentication success')
         return True
 def authorization_login(user_name,pass_word,clientSocket,message,receiver):
     check_server_reply(clientSocket)
@@ -66,44 +72,44 @@ def authorization_login(user_name,pass_word,clientSocket,message,receiver):
     fromContent = f'MAIL FROM: <{transmitter}>'
     mailCommand = "{}\r\n".format(fromContent).encode()
     clientSocket.send(mailCommand)
-    print('Client :',fromContent)
+    # print('Client :',fromContent)
     recv1 = clientSocket.recv(1024).decode()
-    print('Server :',recv1)
+    # print('Server :',recv1)
     if recv1[:3] != '250':
         print('250 reply not received from server.')
         return False
     rcpContent = f'RCPT TO: <{receiver}>'
     mailCommand = "{}\r\n".format(rcpContent).encode()
     clientSocket.send(mailCommand)
-    print('Client :',rcpContent)
+    # print('Client :',rcpContent)
     recv1 = clientSocket.recv(1024).decode()
-    print('Server :',recv1)
+    # print('Server :',recv1)
     if recv1[:3] != '250':
         print('250 reply not received from server.')
         return False
     dataContent = 'DATA'
     dataCommand = '{}\r\n'.format(dataContent).encode()
     clientSocket.send(dataCommand)
-    print('Client :',dataContent)
+    # print('Client :',dataContent)
     recv1 = clientSocket.recv(1024).decode()
-    print('Server :',recv1)
+    # print('Server :',recv1)
     if recv1[:3] != '354':
         print('data 354 reply not received from server.')
         return False
     mess = f'{message}\r\n.\r\n'
     clientSocket.send(mess.encode())
-    print('Client :', mess)
+    # print('Client :', mess)
     recv1 = clientSocket.recv(1024).decode()
-    print('Server :',recv1)
+    # print('Server :',recv1)
     if recv1[:3] != '250':
         print('end msg 250 reply not received from server.')
         return False
     quitContent = 'QUIT'
     quitCommand = '{}\r\n'.format(quitContent).encode()
     clientSocket.send(quitCommand)
-    print('Client :', quitContent)
+    # print('Client :', quitContent)
     recv1 = clientSocket.recv(1024).decode()
-    print('Server :',recv1)
+    # print('Server :',recv1)
     if recv1[:3] != '221':
         print('quit 221 reply not received from server.')
         return False
@@ -121,7 +127,22 @@ def send_email(user_name,password,message,receiver):
     resp = authorization_login(user_name,password,clientSocket,message,receiver)
     return resp
 # def check_mail_pop3(user_name,password,host,port):
-def check_mail_pop3(user_name,password):
+def count_mail(user_name,password):
+    host = 'imap.gmail.com'
+    port = 993
+    server = imaplib.IMAP4_SSL(host,port)
+    print('-----Authorization-----')
+    ser_sta,ser_res = server.login(user_name,password)
+    print('Server :',ser_sta)
+    print('Server :',ser_res[0].decode('utf-8'))
+    print('-----Transaction-----')
+    print('Client : Inbox')
+    ser_sta,ser_res = server.select("Inbox")
+    # print('Server :',ser_sta)
+    # print('Server :',ser_res[0].decode('utf-8'))
+    index = ser_res[0].decode('utf-8')
+    return index
+def check_mail_pop3(user_name,password,dele):
     path_save = '/home/taindp/PycharmProjects/email/download_pop3'
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S").replace(r'/',r'_').replace(r':',r'_').replace(r' ',r'_')
@@ -152,13 +173,16 @@ def check_mail_pop3(user_name,password):
             msg_text = b'\r\n'.join(msg).decode('utf-8')
             # print(parse_email_header(msg_text))
             file_save.write(msg_text)
-        raw_email = b"\n".join(server.retr(1)[1])
-        dict_parser = parser_pop(raw_email)
+            if dele == True:
+                server.dele(item+1)
+        # raw_email = b"\n".join(server.retr(1)[1])
+        # dict_parser = parser_pop(raw_email)
         server.quit()
     # else:
-        return dict_parser
+        return index
     else:
-         server.quit()
+        server.quit()
+        return 0
 def parser_pop(raw_email):
     parsed_email = email.message_from_bytes(raw_email)
     dict_parser = {}
@@ -269,10 +293,28 @@ def parse_email_body(msg):
        parse_email_content(msg)
 # Parse email message part data.
 
+def get_attach_imap(msg,down):
+    list_name = []
+    try:
+    # if msg.is_multipart():
+        for item in msg.walk():
+            maintype = item.get_content_maintype()
+            if maintype == 'application':
+                body = item.get_payload(decode=True)
+                name = decode_header(item.get_filename())
+                list_name.append(name)
+                if down == True:
+                    save_path = '/home/taindp/PycharmProjects/email/download_imap'
+                    fp = open(os.path.join(save_path, name), 'wb')
+                    fp.write(body)
+        return list_name
+    except:
+        pass
 def parse_email_content(msg):
     # messages = []
     body = ""
     if msg.is_multipart():
+
         for part in msg.walk():
             type = part.get_content_type()
             disp = str(part.get('Content-Disposition'))

@@ -46,10 +46,10 @@ section .noi-dung .form{
 section .noi-dung .form h2{
     color: #607d8b;
     font-weight: 500;
-    font-size: 1.5em;
+    font-size: 1.2em;
     text-transform: uppercase;
     margin-bottom: 20px;
-    border-bottom: 4px solid #ff4584;
+/*    border-bottom: 4px solid #ff4584; */
     display: inline-block;
     letter-spacing: 1px;
 
@@ -98,13 +98,13 @@ section .noi-dung .form .mess input{
 
 section .noi-dung .form .input-form input[type="submit"]{
     background: #ff4584;
-    width: 40%;
-    height: 30px;
+    width: 100%;
+    height: 50px;
     color: #fff;
     outline: none;
     border: none;
-    font-weight: 250;
-    font-size: 15px;
+    font-weight: 500;
+    font-size: 20px;
     cursor: pointer;
     box-shadow: 0 1px 1px rgba(0,0,0,0.12),
               0 2px 2px rgba(0,0,0,0.12),

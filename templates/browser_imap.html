@@ -28,7 +28,6 @@
                 <form action="" method="post">
                     <div class="input-form">
                         <h3>Người gửi</h3>
-                        <br>
                         <p>
                             {{header.From}}
                         </p>
@@ -36,7 +35,6 @@
 
                     <div class="input-form">
                         <h3>Người nhận</h3>
-                        <br>
                         <p>
                             {{header.To}}
                         </p>
@@ -44,7 +42,6 @@
 
                     <div class="input-form">
                         <h3>Chủ đề</h3>
-                        <br>
                         <p>
                             {{header.Subject}}
                         </p>
@@ -52,15 +49,23 @@
 
                     <div class="input-form">
                         <h3>Nội dung</h3>
-                        <br>
                         <p>
                             {{body}}
                         </p>
                     </div>
                     <div class="input-form">
-                        <input type="submit" name ="submit_button" value="Trang chủ">
+                        <h3>Tệp đính kèm</h3>
+                        <p>
+                            {{attach}}
+                        </p>
+                        <input type="submit" name ="submit_button" value="Tải tệp">
+                    </div>
+
+                    <div class="input-form">
+
                         <input type="submit" name ="submit_button" value="Trước đó">
                         <input type="submit" name ="submit_button" value="Xem tiếp">
+                         <input type="submit" name ="submit_button" value="Trang chủ">
                         <input type="submit" name ="submit_button" value="Xóa thư">
                     </div>
 
